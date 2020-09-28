@@ -21,8 +21,9 @@ class HashTable:
     """
 
     def __init__(self, capacity):
-        # Your code here
-
+        self.storage = [None] * capacity
+        self.capacity = capacity
+        self.size = 0
 
     def get_num_slots(self):
         """
@@ -63,6 +64,10 @@ class HashTable:
         Implement this, and/or FNV-1.
         """
         # Your code here
+        hash = 5381
+        for c in key:
+            hash = (hash * 33) + ord(c)
+            return hash
 
 
     def hash_index(self, key):
@@ -71,6 +76,7 @@ class HashTable:
         between within the storage capacity of the hash table.
         """
         #return self.fnv1(key) % self.capacity
+
         return self.djb2(key) % self.capacity
 
     def put(self, key, value):
@@ -81,7 +87,22 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        index = self.hash_index(key)
+        if(self.storage[index] == None):
+            self.storage[index] = HashTableEntry(key, value)
+            self.size +=1
+        else:
+            #check if it exists 
+            curr = self.storage[index]
+            while curr.next and curr.key != key:
+                curr = curr.next
+            if curr.key == key:
+                curr.value = value
+            #it doesn't exist, so add it to the head of the list
+            else:
+                curr.next = HashTableEntry(key, value)
+                self.size +=1
+
 
 
     def delete(self, key):
@@ -92,8 +113,41 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        index = self.hash_index(key)
+        #node to delete was first in list
+        if self.storage[index].key == key:
+            if self.storage[index].next == None:
+                #list should now be empty
+                self.storage[index] = None
+                self.size -=1
+            #it is not the only one in the list
+            else:
+                new_head = self.storage[index].next
+                self.storage[index].next = None
+                self.storage[index] = new_head
+                self.size -=1
+        #node was not first in the list or is none
+        else:
+            if self.storage[index] == None:
+                return None
+            else:
+                curr = self.storage[index]
+                prev = None
+                #search until at end or have found key
+                while curr.next is not None and curr.key != key:
+                    prev = curr
+                    curr = curr.next
+                #found the key
+                if curr.key == key:
+                    prev.next = curr.next
+                    self.size -=1
+                    return curr.value
+                #didn't find the key
+                else:
+                    return None
 
+        
+    
 
     def get(self, key):
         """
@@ -103,7 +157,25 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        index = self.hash_index(key)
+        #if it is the first thing in the ll
+        if self.storage[index] is not None and self.storage[index].key == key:
+            return self.storage[index].value
+        #there's nothing there to get
+        elif self.storage[index] is None:
+            return None
+        #possibly later in the ll
+        else:
+            curr = self.storage[index]
+            while curr.next != None and curr.key != key:
+                curr = self.storage[index].next
+            if curr == None:
+                return None
+            else:
+                return curr.value
+
+
+       
 
 
     def resize(self, new_capacity):
