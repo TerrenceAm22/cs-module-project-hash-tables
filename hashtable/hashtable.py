@@ -64,7 +64,7 @@ class HashTable:
         Implement this, and/or FNV-1.
         """
         # Your code here
-        hash = 5381
+        hash = 100
         for c in key:
             hash = (hash * 33) + ord(c)
             return hash
