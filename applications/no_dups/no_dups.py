@@ -1,7 +1,18 @@
 def no_dups(s):
     # Your code here
+    slist = list(s.split(' '))
+
+    flist = []
+
+    for i in range(len(slist)):
+        if slist[i] not in flist:
+            flist.append(slist[i])
 
 
+    out = " ".join(flist)
+
+    # return out
+    return out
 
 if __name__ == "__main__":
     print(no_dups(""))
